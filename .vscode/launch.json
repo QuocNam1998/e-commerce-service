@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug commerce-service",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceFolder}/node_modules/tsx/dist/cli.mjs",
+        "src/server.ts"
+      ],
+      "envFile": "${workspaceFolder}/.env",
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Attach commerce-service",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "restart": true,
+      "cwd": "${workspaceFolder}",
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+}

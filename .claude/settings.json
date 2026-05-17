@@ -1,0 +1,32 @@
+{
+  "autoCompactThreshold": 80,
+  "permissions": {
+    "allow": [
+      "Bash(yarn *)",
+      "Bash(npx *)",
+      "Bash(node *)",
+      "Bash(tsc *)",
+      "Bash(prisma *)",
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git checkout *)",
+      "Bash(git branch*)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(find *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force*)",
+      "Bash(git reset --hard*)",
+      "Bash(DROP TABLE*)",
+      "Bash(prisma db reset*)"
+    ]
+  }
+}
