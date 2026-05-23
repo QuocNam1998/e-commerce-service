@@ -28,6 +28,17 @@ export function createApp() {
     pinoHttp({
       logger,
       genReqId: (req: IncomingMessage) => (req.headers['x-request-id'] as string | undefined) ?? randomUUID(),
+      // Suppress pino-http's synthetic "failed with status code 500" error —
+      // the real error is already logged via request.log.error in the error handler.
+      customErrorMessage: (_req, _res, error) => `request failed: ${error.message}`,
+      serializers: {
+        err: (error: unknown) => {
+          if (error instanceof Error) {
+            return { type: error.name, message: error.message, stack: error.stack };
+          }
+          return error;
+        },
+      },
     }),
   );
   app.use(
@@ -68,7 +79,7 @@ export function createApp() {
     next(new HttpError(404, `Route ${request.method} ${request.originalUrl} was not found.`));
   });
 
-  app.use((error: unknown, _request: express.Request, response: express.Response, _next: express.NextFunction) => {
+  app.use((error: unknown, request: express.Request, response: express.Response, _next: express.NextFunction) => {
     if (error instanceof ZodError) {
       response.status(400).json({
         message: 'Validation failed.',
@@ -78,13 +89,16 @@ export function createApp() {
     }
 
     if (error instanceof HttpError) {
+      if (error.statusCode >= 500) {
+        request.log.error({ err: error }, 'HttpError 5xx');
+      }
       response.status(error.statusCode).json({
         message: error.message,
       });
       return;
     }
 
-    logger.error(error);
+    request.log.error({ err: error }, 'Unhandled server error');
 
     response.status(500).json({
       message: 'Internal server error.',
